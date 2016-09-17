@@ -2,6 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * FIXIT: В коде не должны быть никаких магических чисел вроде 10000 и 30.
+ * Нужно завести константу, из названия которой ясно, зачем это число нужно:
+ * #define MAX_TOKEN_SIZE 10000
+ * #define MAX_TOKENS_COUNT 30
+ * или неким схожим образом ...
+ */
+
 void Split(char* string, char* delimiters, char*** tokens, int* count)
 {
 	char* tmp = (char *)malloc(10000 * sizeof(char));
@@ -22,6 +30,10 @@ void Split(char* string, char* delimiters, char*** tokens, int* count)
 
 int main()
 {
+/*
+ * FIXIT: названия крайте непонятные: что кроется за переменными s,d, mas!!! (мы говорили, что транслит лучше избегать)
+ * видимо это должны быть string, delimeters и tokens
+ */
 	char* s = (char *)malloc(10000 * sizeof(char));
 	char* d = (char *)malloc(30 * sizeof(char));
 	char** mas = (char **)malloc(30 * sizeof(char*));
