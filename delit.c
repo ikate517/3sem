@@ -2,17 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * FIXIT: В коде не должны быть никаких магических чисел вроде 10000 и 30.
- * Нужно завести константу, из названия которой ясно, зачем это число нужно:
- * #define MAX_TOKEN_SIZE 10000
- * #define MAX_TOKENS_COUNT 30
- * или неким схожим образом ...
- */
+
+
+#define MAX_TOKEN_SIZE 10000
+#define MAX_TOKENS_COUNT 30
 
 void Split(char* string, char* delimiters, char*** tokens, int* count)
 {
-	char* tmp = (char *)malloc(10000 * sizeof(char));
+	char* tmp = (char *)malloc(MAX_TOKEN_SIZE * sizeof(char));
 	int i;
 	tmp = strtok(string, delimiters);
 	strcpy((*tokens)[0], tmp);
@@ -30,33 +27,30 @@ void Split(char* string, char* delimiters, char*** tokens, int* count)
 
 int main()
 {
-/*
- * FIXIT: названия крайте непонятные: что кроется за переменными s,d, mas!!! (мы говорили, что транслит лучше избегать)
- * видимо это должны быть string, delimeters и tokens
- */
-	char* s = (char *)malloc(10000 * sizeof(char));
-	char* d = (char *)malloc(30 * sizeof(char));
-	char** mas = (char **)malloc(30 * sizeof(char*));
+
+	char* string = (char *)malloc(MAX_TOKEN_SIZE * sizeof(char));
+	char* delimetres = (char *)malloc(MAX_TOKENS_COUNT * sizeof(char));
+	char** tokens = (char **)malloc(MAX_TOKENS_COUNT * sizeof(char*));
 	int i;
-	for (i = 0; i < 30; i++)
+	for (i = 0; i < MAX_TOKENS_COUNT; i++)
 	{
-		mas[i] = (char *)malloc(30 * sizeof(char));
+		tokens[i] = (char *)malloc(MAX_TOKENS_COUNT * sizeof(char));
 	}
 	int count;
-	gets(s);
-	gets(d);
-	Split(s, d, &mas, &count);   
+	gets(string);
+	gets(delimetres);
+	Split(string, delimetres, &tokens, &count);   
 	for (i = 0; i < count; i++)
 	{
-		printf("%s\n", mas[i]);
+		printf("%s\n", tokens[i]);
 	}
-	for (i = 0; i < 30; i++)
+	for (i = 0; i < MAX_TOKENS_COUNT; i++)
 	{
-		free(mas[i]);
+		free(tokens[i]);
 	}
-	free(d);
-	free(s);
-	free(mas);
+	free(delimetres);
+	free(string);
+	free(tokens);
 	return 0;
 }
 
