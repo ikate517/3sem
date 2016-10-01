@@ -24,6 +24,24 @@ void Split(char* string, char* delimiters, char*** tokens, int* count)
 	free(tmp);
 }
 
+/*
+ * Ваш split можно было бы переписать так:
+ * 
+
+void Split(char* string, char* delimeters, char*** tokens, int* tokensCount)
+{
+  *tokensCount = 0;
+  char* t = strtok(string, delimeters);
+  while (t)
+  {
+    (*tokens)[*tokensCount] = t;
+    (*tokensCount)++;
+    t = strtok(NULL, delimeters);
+  }
+}
+
+*/
+
 int main()
 {
 	int i = 0;
@@ -33,9 +51,16 @@ int main()
 	char* string = malloc(MAX_STRING_SIZE * sizeof(char));
 	FILE* file;
 	file = fopen("file.txt", "r");
+/*
+ * Если вы что-то считаваете с некого file.txt, его тоже следует коммитить.
+ * 
+ * Считывание некого N выглядить очень странно. Лучше бы назвали более конкретным названием.
+ * Видимо это число комманд для запуска. Почему бы это число не считать также из файла со списком задач.
+ */
 	fscanf(file, "%d", &N);
 	N = N + 1;
-	char **tokens = malloc(N * sizeof(char*));
+
+  char **tokens = malloc(N * sizeof(char*));
 
 	for (i = 0; i < N; i++) 
 	{
