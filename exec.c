@@ -6,28 +6,6 @@
 #define MAX_STRING_SIZE 1000
 #define MAX_TOKEN_SIZE 100
 
-void Split(char* string, char* delimiters, char*** tokens, int* count)
-{
-	char* tmp = (char *)malloc(MAX_TOKEN_SIZE * sizeof(char));
-	int i;
-	tmp = strtok(string, delimiters);
-	strcpy((*tokens)[0], tmp);
-	i = 1;
-	while (tmp != NULL) 
-	{
-		tmp = strtok(NULL, delimiters);
-		if (tmp != NULL)
-			strcpy((*tokens)[i], tmp);
-		i++;
-	}
-	*count = i - 1;
-	free(tmp);
-}
-
-/*
- * Ваш split можно было бы переписать так:
- * 
-
 void Split(char* string, char* delimeters, char*** tokens, int* tokensCount)
 {
   *tokensCount = 0;
@@ -40,34 +18,28 @@ void Split(char* string, char* delimeters, char*** tokens, int* tokensCount)
   }
 }
 
-*/
 
 int main()
 {
 	int i = 0;
 	int count;
-	int N;
+	int commands_number;
 	char delimitres[2] = {' ', '\n'};
 	char* string = malloc(MAX_STRING_SIZE * sizeof(char));
 	FILE* file;
 	file = fopen("file.txt", "r");
-/*
- * Если вы что-то считаваете с некого file.txt, его тоже следует коммитить.
- * 
- * Считывание некого N выглядить очень странно. Лучше бы назвали более конкретным названием.
- * Видимо это число комманд для запуска. Почему бы это число не считать также из файла со списком задач.
- */
-	fscanf(file, "%d", &N);
-	N = N + 1;
 
-  char **tokens = malloc(N * sizeof(char*));
+	fscanf(file, "%d", &commands_number);
+	commands_number += 1;
 
-	for (i = 0; i < N; i++) 
+  char **tokens = malloc(commands_number * sizeof(char*));
+
+	for (i = 0; i < commands_number; i++) 
 	{
 		tokens[i] = malloc(MAX_TOKEN_SIZE * sizeof(char));
 	}
 	
-	for (i = 0; i < N; i++)
+	for (i = 0; i < commands_number; i++)
 	{
 		fgets(string, MAX_STRING_SIZE,file);
 		pid_t pid = fork();
@@ -81,7 +53,7 @@ int main()
 		}
 	}
 	
-	for (i = 0; i < N; i++) 
+	for (i = 0; i < commands_number; i++) 
 	{
 		free(tokens[i]);
 	}
