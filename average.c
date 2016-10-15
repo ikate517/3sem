@@ -46,7 +46,11 @@ int main()
     {
 		data[i] = (rand() % 2);
 	}
-	
+
+/*
+ * Если у вас массив, то лучше множественное число использовать:
+ * thread_ids
+ */
 	pthread_t thread_id[THREAD_NUM - 1];
 	int num = 0;
     int result[THREAD_NUM - 1];
@@ -70,6 +74,12 @@ int main()
 		}
 	}
 	
+	/*
+   * FIXIT: Это ненужный copy-and-paste кода:
+   * Создайте просто на одну нить больше в цикле.
+   * То, что у вас дочерняя нить будет "бездельничать" на результат особо не повлияет, т.к. 
+   * пока нить ждет на join'е, то ресурсов не потребляет.
+   */
 	part_sum[THREAD_NUM - 1] = 0;
 	part_sqrt_sum[THREAD_NUM - 1] = 0;
 	for (i = segments[THREAD_NUM - 1].begin; i < segments[THREAD_NUM - 1].end; i++)
@@ -94,5 +104,12 @@ int main()
  
 	printf("sum = %.0f   average = %.2f   dispersion = %.2f\n", sum, average, dispersion);
 	printf(" %d time = %.1f\n", THREAD_NUM ,time_spent);
+  
+  /*
+   * К сожалению, я забыл про одну особенность ф-и clock:
+   * http://stackoverflow.com/questions/2962785/c-using-clock-to-measure-time-in-multi-threaded-programs
+   * из-за которой вы даже теоретически не могли наблюдать ускорение.
+   * В ссылка сказано, как по-хорошему надо было делать.
+   */
     return 0;
 }
