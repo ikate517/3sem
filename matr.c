@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #define N 384  // quantity of strings in matrix 384
-#define THREAD_NUM 2
+#define THREAD_NUM 4
 
 struct Segment
 {
@@ -13,23 +13,12 @@ struct Segment
 	int index;
 };
 
-/*
- * Скорее всего для большего размера матриц у вас просто не хватит памяти на стеке.
- * Поэтому лучше память под большие матрицы выделять в куче. Чем больше матрица, тем больше шанс увидеть ускорение.
- * На маленьких матрицах накладные расходы на переключение контекстов сравнимы с "полезной работой", поэтому
- * ускорение можно и не увидеть.
- * 
- * Про измерение ускорения опомянул в коде программы про среднее.
- */
 int A[N][N], B[N][N], C[N][N];
 
 void* my_thread(void* arg) 
 {
 	struct Segment segment = *((struct Segment*)arg);
 	int i, k, j;
-  /*
-   * Здорово, что вы знаете, что порядок циклов ikj лучше ijk
-   */
 	for(i = segment.begin; i < segment.end; i++)
 		for(k = 0; k < N; k++)
 			for(j = 0; j < N; ++j)
@@ -39,7 +28,7 @@ void* my_thread(void* arg)
 
 int main()
 {	
-	pthread_t thread_id[THREAD_NUM];
+	pthread_t thread_ids[THREAD_NUM];
 	int result[THREAD_NUM];
 	int i, j, k;
 	FILE *file;
@@ -67,10 +56,12 @@ int main()
 			fscanf(file ,"%d", &B[i][j]);
 		}
 	}
-	clock_t begin = clock();
-    for (i = 0; i < THREAD_NUM - 1; i++)
+	struct timespec start, finish;
+	double elapsed;
+	clock_gettime(CLOCK_MONOTONIC, &start);	
+    for (i = 0; i < THREAD_NUM; i++)
     {
-		result[i] = pthread_create(&thread_id[i], (pthread_attr_t *)NULL, my_thread, &(segments[i]));
+		result[i] = pthread_create(&thread_ids[i], (pthread_attr_t *)NULL, my_thread, &(segments[i]));
 
 		if (result[i]) 
 		{
@@ -78,15 +69,11 @@ int main()
 			exit(-1);
 		}
 	}
-	for(i = segments[THREAD_NUM - 1].begin; i < segments[THREAD_NUM - 1].end; i++)
-		for(k = 0; k < N; k++)
-			for(j = 0; j < N; ++j)
-				C[i][j] += A[i][k] * B[k][j];
 	for(i = 0; i < THREAD_NUM; i++)
     {
-		pthread_join(thread_id[i], (void **) NULL);
+		pthread_join(thread_ids[i], (void **) NULL);
 	}
-	clock_t end = clock();
+	clock_gettime(CLOCK_MONOTONIC, &finish);
 	/*for (i = 0; i < N; i++)
 	{
 		for (j = 0; j < N; j++)
@@ -95,8 +82,9 @@ int main()
 		}
 		printf("\n");
 	}*/
-	double time_spent = (double)(end - begin);
-	printf(" %d time = %.1f\n", THREAD_NUM ,time_spent);
+	elapsed = (finish.tv_sec - start.tv_sec);
+	elapsed += (finish.tv_nsec - start.tv_nsec) / 10000000.0;
+	printf(" %d time = %.1f\n", THREAD_NUM, elapsed);
 	fclose(file);
 	return 0;
 }

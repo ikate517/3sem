@@ -47,13 +47,9 @@ int main()
 		data[i] = (rand() % 2);
 	}
 
-/*
- * Если у вас массив, то лучше множественное число использовать:
- * thread_ids
- */
-	pthread_t thread_id[THREAD_NUM - 1];
+	pthread_t thread_ids[THREAD_NUM];
 	int num = 0;
-    int result[THREAD_NUM - 1];
+    int result[THREAD_NUM];
     struct Segment segments[THREAD_NUM];
     for (i = 0; i < THREAD_NUM; i++)
 	{
@@ -62,33 +58,23 @@ int main()
 		segments[i].end = segments[i].begin + len;
 	}
 	
-	clock_t begin = clock();
-	
-	for(i = 0; i < THREAD_NUM - 1; i++) 
+	struct timespec start, finish;
+	double elapsed;
+	clock_gettime(CLOCK_MONOTONIC, &start);	
+	for(i = 0; i < THREAD_NUM; i++) 
 	{
-		result[i] = pthread_create(&(thread_id[i]), (pthread_attr_t *)NULL, my_thread, &(segments[i]));
+		result[i] = pthread_create(&(thread_ids[i]), (pthread_attr_t *)NULL, my_thread, &(segments[i]));
         if (result[i]) 
         {
 			printf("Can`t create thread, returned value = %d\n" , result[i]);
 			exit(-1);
 		}
 	}
-	
-	/*
-   * FIXIT: Это ненужный copy-and-paste кода:
-   * Создайте просто на одну нить больше в цикле.
-   * То, что у вас дочерняя нить будет "бездельничать" на результат особо не повлияет, т.к. 
-   * пока нить ждет на join'е, то ресурсов не потребляет.
-   */
-	part_sum[THREAD_NUM - 1] = 0;
-	part_sqrt_sum[THREAD_NUM - 1] = 0;
-	for (i = segments[THREAD_NUM - 1].begin; i < segments[THREAD_NUM - 1].end; i++)
-	{
-		part_sum[THREAD_NUM - 1] += data[i];
-		part_sqrt_sum[THREAD_NUM - 1] += data[i] * data[i];
+	for(i = 0; i < THREAD_NUM; i++)
+    {
+		pthread_join(thread_ids[i], (void **) NULL);
 	}
-	
-	clock_t end = clock();
+	clock_gettime(CLOCK_MONOTONIC, &finish);
 	
 	for (i = 0; i < THREAD_NUM; i++)
 	{
@@ -100,16 +86,11 @@ int main()
 	sqrt_sum /= MAX_NUMBER;
 	dispersion = sqrt_sum - average * average;
 
-	double time_spent = (double)(end - begin);
+	elapsed = (finish.tv_sec - start.tv_sec);
+	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
  
 	printf("sum = %.0f   average = %.2f   dispersion = %.2f\n", sum, average, dispersion);
-	printf(" %d time = %.1f\n", THREAD_NUM ,time_spent);
+	printf(" %d time = %.1f\n", THREAD_NUM, elapsed);
   
-  /*
-   * К сожалению, я забыл про одну особенность ф-и clock:
-   * http://stackoverflow.com/questions/2962785/c-using-clock-to-measure-time-in-multi-threaded-programs
-   * из-за которой вы даже теоретически не могли наблюдать ускорение.
-   * В ссылка сказано, как по-хорошему надо было делать.
-   */
     return 0;
 }
