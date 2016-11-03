@@ -9,8 +9,8 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 
-#define TABLE 2 
 #define MAX_DISHES_NUM 10
+#define TABLE 4
 struct sembuf mybuf;
 int semid;
 

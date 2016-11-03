@@ -23,6 +23,9 @@ int main()
 		printf("Can\'t get msqid\n");
 		exit(-1);
 	}
+	
+	int i;
+	
 	struct mymsgbuf
 	{
 		long mtype;
@@ -34,7 +37,7 @@ int main()
 	FILE *washer = fopen("washer.txt", "r");
 	int *time = malloc(MAX_DISHES_NUM * sizeof(int));
 	int t = 0;
-	int i = 0, num = 1;
+	int num = 1;
 	int type = 0, count = 0;
 	while (num != 0)
 	{
@@ -59,12 +62,12 @@ int main()
 				msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
 				exit(-1);
 			}
-			exit(0);
+			break;
 		}
 		for(i = 0; i < count; i++)
 		{
 			sleep(time[type - 1]);
-			printf("OK %d\n", type);
+			printf("OK type = %d time = %d \n", type, time[type - 1]);
 			mybuf.mtype = 1;
 			mybuf.info.type = type;
 			len = sizeof(mybuf.info);

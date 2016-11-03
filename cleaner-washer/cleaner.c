@@ -55,11 +55,13 @@ int main()
 		semaphore(1);
 		type = mybuf.info.type;
 		if (type == 0)
-			exit(0);
+			break;
 		sleep(time[type - 1]);
-		printf("OK %d\n", type);
+		printf("OK type = %d time = %d\n", type, time[type - 1]);
 	}
 	free(time);
+	semctl(semid, 0, IPC_RMID, 0);
+	msgctl(msqid, IPC_RMID, 0);
 	return 0;
 }
 
