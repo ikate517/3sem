@@ -43,6 +43,10 @@ int FindFile(char *directory, int depth, char *filename)
 
 int main(int argc, char* argv[])
 {
+  /*
+   * FIXIT: Если вы заводите переменную is_found, то в случае успеха не нужно убивать процесс с помощью exit(0). Функция должна вернуть 1, если либо в текущей директории получилось 
+   * найти этот файл, либо хотя бы один из рекурсивных вызовов FindFile нашёл во вложенной директории его.
+   */
 	int is_find;
 	is_find  = FindFile(argv[1], atoi(argv[2]), argv[3]);
 	if(is_find == 0)
