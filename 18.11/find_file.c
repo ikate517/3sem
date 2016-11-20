@@ -26,7 +26,7 @@ int FindFile(char *directory, int depth, char *filename)
 		{
 			printf("Path:  %s\n", directory);
 			free(path);
-			exit(0);
+			return 1;
 		}
 	}
 		if((entry->d_type == DT_DIR) && (depth > 0) && (strcmp(entry -> d_name, ".") && strcmp(entry -> d_name, "..")))
@@ -34,7 +34,8 @@ int FindFile(char *directory, int depth, char *filename)
 		strcpy(path, directory);
 		strcat(path, "/");
 		strcat(path, entry->d_name);
-		FindFile(path, depth - 1, filename);
+		if (FindFile(path, depth - 1, filename))
+			return 1;
 		}   
 	}
 	free(path);
@@ -43,10 +44,6 @@ int FindFile(char *directory, int depth, char *filename)
 
 int main(int argc, char* argv[])
 {
-  /*
-   * FIXIT: Если вы заводите переменную is_found, то в случае успеха не нужно убивать процесс с помощью exit(0). Функция должна вернуть 1, если либо в текущей директории получилось 
-   * найти этот файл, либо хотя бы один из рекурсивных вызовов FindFile нашёл во вложенной директории его.
-   */
 	int is_find;
 	is_find  = FindFile(argv[1], atoi(argv[2]), argv[3]);
 	if(is_find == 0)
