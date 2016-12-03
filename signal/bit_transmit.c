@@ -7,6 +7,10 @@
 
 #define MAX_LENGHT 100
 
+/*
+придерживайтесь одного стиля именования переменных: bitNumber
+*/
+
 int BitNumber = 0;
 pid_t ppid;
 char s[] = "Hello, world!";
@@ -34,6 +38,10 @@ void sendBit()
 	int position = BitNumber % 8; 
 	bit = s[number] & (1 << position);
 	BitNumber++;
+  /*
+   * Есть такая штука, которую тернарным оператором называют, которая помогает сделать код лаконичнее:
+   * kill(ppid, bit ? SIGUSR2 : SIGUSR1);
+   */
 	if(bit)
 	{
 		kill(ppid, SIGUSR2);
